@@ -3,6 +3,13 @@ package com.mysite.sbb;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 @Controller
 public class MainController {
 
@@ -49,6 +56,14 @@ public class MainController {
 
     }
 
+    @GetMapping("/plus2")
+    @ResponseBody
+    public void showPlus2(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        int a = Integer.parseInt(req.getParameter("a"));
+        int b = Integer.parseInt(req.getParameter("b"));
+        res.getWriter().append(a + b + "");
+    }
+
     @GetMapping("/minus")
     @ResponseBody
     public String minus(@RequestParam("a") int a, @RequestParam("b") int b) {
@@ -77,6 +92,7 @@ public class MainController {
                 <h1>%d</h1>
                 """.formatted(num++);
     }
+
     @GetMapping("/problem4")
     @ResponseBody
     public String problem4() {
@@ -97,18 +113,16 @@ public class MainController {
         if (limit == null)
             limit = 9;
 
-        String answer = "";
-        for (int i = 1; i <= limit; i++) {
-            answer += "%d * %d = %d <br>".formatted(dan, i, (dan * i));
-        }
-        return """
-                %s
-                """.formatted(answer);
+        Integer finalDan = dan;
+        return IntStream.rangeClosed(1, limit)
+                .mapToObj(i -> "%d * %d = %d".formatted(finalDan, i, finalDan * i))
+                .collect(Collectors.joining("<br>\n"));
+
     }
 
     @GetMapping("/mbti")
     @ResponseBody
-    public String mbti(String name){
+    public String mbti(String name) {
         String mbti = "";
         if (name.equals("홍길동"))
             mbti = "INFP";
@@ -122,6 +136,5 @@ public class MainController {
         return """
                 <h1>%s</h1>
                 """.formatted(mbti);
-
     }
 }
