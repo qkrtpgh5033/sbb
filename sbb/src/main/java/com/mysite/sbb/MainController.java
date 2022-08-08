@@ -120,19 +120,14 @@ public class MainController {
 
     }
 
-    @GetMapping("/mbti")
+    @GetMapping("/mbti/{name}")
     @ResponseBody
-    public String mbti(String name) {
-        String mbti = "";
-        if (name.equals("홍길동"))
-            mbti = "INFP";
-        else if (name.equals("홍길순")) {
-            mbti = "ENFP";
-        } else if (name.equals("임꺽정")) {
-            mbti = "INFJ";
-        } else if (name.equals("박범서")) {
-            mbti = "ISFP";
-        }
+    public String mbti(@PathVariable String name) {
+        String mbti = switch (name) {
+            case "홍길동" -> "INFP";
+            default -> "모름";
+        };
+
         return """
                 <h1>%s</h1>
                 """.formatted(mbti);
