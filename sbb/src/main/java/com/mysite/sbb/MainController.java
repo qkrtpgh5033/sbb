@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -132,4 +133,23 @@ public class MainController {
                 <h1>%s</h1>
                 """.formatted(mbti);
     }
+
+    @GetMapping("/saveSessionAge/{age}")
+    @ResponseBody
+    public void showSession(@PathVariable int age, HttpServletRequest req) {
+        HttpSession httpSession = req.getSession();
+        httpSession.setAttribute("age", age);
+    }
+
+    @GetMapping("/getSessionAge")
+    @ResponseBody
+    public String getSession(HttpSession session){
+        return """
+                <h1>%d</h1>
+                """.formatted(session.getAttribute("age"));
+
+    }
+
+
+
 }
