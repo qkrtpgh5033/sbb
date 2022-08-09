@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,7 +22,11 @@ public class MainController {
     @Autowired
     ObjectMapper mapper;
     private static int num = 0;
-    ArrayList<ArticleDto> articleList = new ArrayList<>();
+    ArrayList<ArticleDto> articleList = new ArrayList<>(
+            Arrays.asList(
+                    new ArticleDto("제목", "내용"),
+                    new ArticleDto("제목", "내용"))
+    );
 
     @RequestMapping("/sbb")
     // 아래 함수의 리턴값을 그대로 브라우저에 표시
@@ -187,6 +192,53 @@ public class MainController {
                 %s
                 """.formatted(mapper.writeValueAsString(findArticle));
     }
+
+    @GetMapping("/modifyArticle")
+    @ResponseBody
+    public String modifyArticle(@RequestParam("id") long id, @RequestParam("title") String title, @RequestParam("body") String body) {
+
+        ArticleDto findArticle = articleList
+                .stream()
+                .filter(a -> a.getId() == id) // 1번
+                .findFirst()
+                .orElse(null);
+
+
+        if(findArticle == null)
+            return """
+                    <h1>해당 게시물은 존재하지 않습니다.</h1>
+                    """;
+
+        findArticle.setTitle(title);
+        findArticle.setBody(body);
+
+        return """
+                %d번 게시물이 수정되었습니다.
+                """.formatted(id);
+    }
+
+    @GetMapping("/deleteArticle")
+    @ResponseBody
+    public String deleteArticle(@RequestParam("id") long id) {
+
+        ArticleDto findArticle = articleList
+                .stream()
+                .filter(a -> a.getId() == id) // 1번
+                .findFirst()
+                .orElse(null);
+
+
+        if(findArticle == null)
+            return """
+                    <h1>해당 게시물은 존재하지 않습니다.</h1>
+                    """;
+
+        articleList.remove(findArticle);
+        return """
+                %d번 게시물이 삭제되었습니다.
+                """.formatted(id);
+    }
+
 
 
 
