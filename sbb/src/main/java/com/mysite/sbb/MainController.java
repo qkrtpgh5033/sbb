@@ -1,20 +1,27 @@
 package com.mysite.sbb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
 public class MainController {
 
-    static int num = 0;
+
+    @Autowired
+    ObjectMapper mapper;
+    private static int num = 0;
+    ArrayList<ArticleDto> articleList = new ArrayList<>();
 
     @RequestMapping("/sbb")
     // 아래 함수의 리턴값을 그대로 브라우저에 표시
@@ -140,14 +147,45 @@ public class MainController {
         HttpSession httpSession = req.getSession();
         httpSession.setAttribute("age", age);
     }
-
     @GetMapping("/getSessionAge")
     @ResponseBody
-    public String getSession(HttpSession session){
+    public String getSession(HttpSession session) {
         return """
                 <h1>%d</h1>
                 """.formatted(session.getAttribute("age"));
 
+    }
+
+    @GetMapping("/addArticle")
+    @ResponseBody
+    public String addArticle(@RequestParam("title") String title, @RequestParam("body") String body) {
+        ArticleDto articleDto = new ArticleDto(title, body);
+        articleList.add(articleDto);
+        return """
+                <h1>%d번 글이 등록되었습니다.</h1>
+                """.formatted(articleDto.getId());
+    }
+
+
+    @GetMapping("/article/{id}")
+    @ResponseBody
+    public String showArticle(@PathVariable Integer id) throws JsonProcessingException {
+
+        ArticleDto findArticle = null;
+        for (ArticleDto articleDto : articleList) {
+            if(articleDto.getId() == id)
+                findArticle = articleDto;
+        }
+        if (findArticle == null) {
+            return """
+                   <h1>내용 없음</h1> 
+                   """;
+        }
+
+
+        return """
+                %s
+                """.formatted(mapper.writeValueAsString(findArticle));
     }
 
 
