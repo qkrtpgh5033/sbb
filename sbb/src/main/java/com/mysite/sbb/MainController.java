@@ -152,6 +152,7 @@ public class MainController {
         HttpSession httpSession = req.getSession();
         httpSession.setAttribute("age", age);
     }
+
     @GetMapping("/getSessionAge")
     @ResponseBody
     public String getSession(HttpSession session) {
@@ -178,13 +179,13 @@ public class MainController {
 
         ArticleDto findArticle = null;
         for (ArticleDto articleDto : articleList) {
-            if(articleDto.getId() == id)
+            if (articleDto.getId() == id)
                 findArticle = articleDto;
         }
         if (findArticle == null) {
             return """
-                   <h1>내용 없음</h1> 
-                   """;
+                    <h1>내용 없음</h1> 
+                    """;
         }
 
 
@@ -204,7 +205,7 @@ public class MainController {
                 .orElse(null);
 
 
-        if(findArticle == null)
+        if (findArticle == null)
             return """
                     <h1>해당 게시물은 존재하지 않습니다.</h1>
                     """;
@@ -228,7 +229,7 @@ public class MainController {
                 .orElse(null);
 
 
-        if(findArticle == null)
+        if (findArticle == null)
             return """
                     <h1>해당 게시물은 존재하지 않습니다.</h1>
                     """;
@@ -239,7 +240,17 @@ public class MainController {
                 """.formatted(id);
     }
 
+    @GetMapping("/addPerson")
+    @ResponseBody
+    public Person addPerson(Person person){
+        return person;
+    }
 
-
+    @GetMapping("/addPerson/{id}")
+    @ResponseBody
+    public Person addPerson2(@PathVariable("id") int id, Person person){
+        person.setId(id);
+        return person;
+    }
 
 }
