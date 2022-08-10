@@ -84,5 +84,11 @@ class SbbApplicationTests {
 		questionRepository.save(question);
 	}
 
+	@Test
+	public void delete(){
+		Question findQuestion = questionRepository.findById(1).orElse(null);
+		questionRepository.delete(findQuestion);
+		assertEquals(1, questionRepository.count());
+	}
 
 }
