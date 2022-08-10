@@ -25,7 +25,7 @@ public class Question {
     private String content;
 
     private LocalDateTime localDateTime;
-
+    public void test(){}
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
-    private List<Answer> answerList = new ArrayList<>();
+    private List<Answer> answerList = new ArrayList<>(); // 클래스에만 존재 ( DB 컬럼에는 정보를 1개만 넣을 수 있다. )
 }

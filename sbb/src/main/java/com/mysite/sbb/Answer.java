@@ -20,6 +20,8 @@ public class Answer {
 
     private LocalDateTime localDateTime;
 
-    @ManyToOne //  질문 엔티티와 연결된 속성이라는 것을 명시적으로 표시해야 한다.
+    @ManyToOne//  질문 엔티티와 연결된 속성이라는 것을 명시적으로 표시해야 한다.
+    @JoinColumn(name = "question_id")
     private Question question;
+
 }
