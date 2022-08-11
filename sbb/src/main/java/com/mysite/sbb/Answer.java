@@ -18,7 +18,7 @@ public class Answer {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private LocalDateTime localDateTime;
+    private LocalDateTime createDate;
 
     @ManyToOne//  질문 엔티티와 연결된 속성이라는 것을 명시적으로 표시해야 한다.
     @JoinColumn(name = "question_id")
