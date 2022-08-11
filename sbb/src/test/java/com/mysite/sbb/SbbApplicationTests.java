@@ -29,12 +29,30 @@ class SbbApplicationTests {
 
 	@BeforeEach
 	public void beforeEach(){
-		questionRepository.deleteAll();
+
+		clearData();
+		addData();
+
+	}
+
+	public void clearData(){
+		questionRepository.disableForeignKeyCHECKS();
+		questionRepository.truncateQuestion();
+		questionRepository.ableForeignKeyCHECKS();
+
+		answerRepository.disableForeignKeyCHECKS();
+		answerRepository.truncateAnswer();
+		answerRepository.ableForeignKeyCHECKS();
+
+	}
+
+	public void addData(){
 		Question q = new Question();
 		q.setSubject("ssb");
 		q.setContent("ssb에 대해서 알고 싶습니다.");
-		q.setLocalDateTime(LocalDateTime.now());
-		this.questionRepository.save(q);  // 첫번째 질문 저장
+		q.setCreateDate(LocalDateTime.now());
+		questionRepository.save(q);  // 첫번째 질문 저장
+		questionRepository.flush();
 
 //		Question q2 = new Question();
 //		q2.setSubject("스프링부트 모델 질문입니다.");
@@ -56,96 +74,181 @@ class SbbApplicationTests {
 
 //		answerRepository.flush();
 //		questionRepository.flush();
-
-
 	}
 
 
 	@Test
-	public void find(){
+	public void question_저장이_잘되는지(){
+		Question question = new Question();
+		question.setSubject("제목입니다.");
+		question.setContent("저장이 잘 되는지 체크");
+		question.setCreateDate(LocalDateTime.now());
+
+		questionRepository.save(question);
+
 		List<Question> all = questionRepository.findAll();
-		assertEquals(1, all.size());
-
-		Question question = all.get(0);
-		assertEquals("ssb", question.getSubject());
-
-		Question question1 = questionRepository.findById(1).get();
-//		assertEquals(question, question1); 엔티티 동일성 보장은 안해줌 ( EntityManager가 필요 )
-		assertEquals(question.getSubject(), question1.getSubject());
+		assertEquals(2, all.size());
 	}
 
 	@Test
-	public void find_subject(){
-		List<Question> all = questionRepository.findAll();
-		for (Question i : all) {
-			System.out.println(i.getSubject());
-		}
-		List<Question> list = questionRepository.findBySubject("ssb");
-		assertEquals(list.get(0).getSubject(), "ssb");
+	public void question_삭제가_잘되는지(){
 
-	}
+//		assertEquals(2, this.questionRepository.count());
+//		Optional<Question> oq = this.questionRepository.findById(1);
+//		assertTrue(oq.isPresent());
+//		Question q = oq.get();
+//		this.questionRepository.delete(q);
+//		assertEquals(1, this.questionRepository.count());
 
-	@Test
-	public void find_subjectAndContent(){
-		Question findQuestion = questionRepository.findBySubjectAndContent("ssb", "ssb에 대해서 알고 싶습니다.").orElseGet(null);
-		assertEquals(findQuestion.getId(), 1);
-	}
-
-	@Test
-	public void find_subjectLike(){
-		List<Question> bySubjectLike = questionRepository.findBySubjectLike("ssb%");
-		assertEquals(bySubjectLike.get(0).getSubject(), "ssb");
-	}
-
-	@Test
-	public void modify_subject(){
 		Optional<Question> byId = questionRepository.findById(1);
 		assertTrue(byId.isPresent());
-
 		Question question = byId.get();
+		questionRepository.delete(question);
+		List<Question> all = questionRepository.findAll();
+		assertEquals(0, all.size());
+	}
+
+	@Test
+	public void question_수정이_잘되는지(){
+		Question question = questionRepository.findById(1).orElse(null);
 		question.setSubject("수정된 제목");
+		question.setContent("수정된 내용");
 		questionRepository.save(question);
+
+		Question testQuestion = questionRepository.findById(1).orElse(null);
+
+		assertEquals(question.getSubject(), testQuestion.getSubject());
 	}
 
 	@Test
-	public void delete(){
-		Question findQuestion = questionRepository.findById(1).orElse(null);
-		questionRepository.delete(findQuestion);
-		assertEquals(1, questionRepository.count());
+	public void findBySubject(){
+		List<Question> ssb = questionRepository.findBySubject("ssb");
+		assertEquals(ssb.get(0).getSubject(), "ssb");
+
 	}
 
 	@Test
-	void testJpa() {
-		Optional<Answer> oa = this.answerRepository.findById(1);
-		assertTrue(oa.isPresent());
-		Answer a = oa.get();
-		System.out.println("a.getContent() = " + a.getContent());
-		assertEquals(1, a.getQuestion().getId());
+	public void findBySubjectAndContent(){
+		Question question = questionRepository.findBySubjectAndContent("ssb", "ssb에 대해서 알고 싶습니다.").orElse(null);
+		assertEquals(1, question.getId());
 	}
 
+	@Test
+	public void findBySubjectLike(){
+		List<Question> bySubjectLike = questionRepository.findBySubjectLike("%ssb");
+		assertEquals(1, bySubjectLike.size());
+	}
+
+	@Test
 	@Transactional
-	@Test
-	@Rollback(value = false)
-	void testJpa2() {
-//		questionRepository
-		Optional<Question> oq = this.questionRepository.findById(1);
-		assertTrue(oq.isPresent());
-		Question q = oq.get();
-		System.out.println("q.getContent() = " + q.getContent());
-		List<Answer> answerList = q.getAnswerList();
+	public void test() {
+
+		Question question = questionRepository.findById(1).orElse(null);
+		System.out.println("question.getSubject() = " + question.getSubject());
+
+		List<Answer> answerList = question.getAnswerList();
 		for (Answer answer : answerList) {
 			System.out.println("answer.getContent() = " + answer.getContent());
 		}
-		System.out.println("test");
-//		assertEquals(1, answerList.size());
-//		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+		assertEquals(1, answerList.size());
+		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
 	}
 
-	@Test
-	public void delete_truncate(){
-		questionRepository.truncateQuestion();
-		List<Question> all = questionRepository.findAll();
-		System.out.println("all.size() = " + all.size());
-	}
+
+
+//	@Test
+//	public void find(){
+//		List<Question> all = questionRepository.findAll();
+//		assertEquals(1, all.size());
+//
+//		Question question = all.get(0);
+//		assertEquals("ssb", question.getSubject());
+//
+//		Question question1 = questionRepository.findById(1).get();
+////		assertEquals(question, question1); 엔티티 동일성 보장은 안해줌 ( EntityManager가 필요 )
+//		assertEquals(question.getSubject(), question1.getSubject());
+//	}
+//
+//	@Test
+//	public void find_subject(){
+//		List<Question> all = questionRepository.findAll();
+//		for (Question i : all) {
+//			System.out.println(i.getSubject());
+//		}
+//		List<Question> list = questionRepository.findBySubject("ssb");
+//		assertEquals(list.get(0).getSubject(), "ssb");
+//
+//	}
+//
+//	@Test
+//	public void find_subjectAndContent(){
+//		Question findQuestion = questionRepository.findBySubjectAndContent("ssb", "ssb에 대해서 알고 싶습니다.").orElseGet(null);
+//		assertEquals(findQuestion.getId(), 1);
+//	}
+//
+//	@Test
+//	public void find_subjectLike(){
+//		List<Question> bySubjectLike = questionRepository.findBySubjectLike("ssb%");
+//		assertEquals(bySubjectLike.get(0).getSubject(), "ssb");
+//	}
+//
+//	@Test
+//	public void modify_subject(){
+//		Optional<Question> byId = questionRepository.findById(1);
+//		assertTrue(byId.isPresent());
+//
+//		Question question = byId.get();
+//		question.setSubject("수정된 제목");
+//		questionRepository.save(question);
+//	}
+//
+//	@Test
+//	public void delete(){
+//		Question findQuestion = questionRepository.findById(1).orElse(null);
+//		questionRepository.delete(findQuestion);
+//		assertEquals(1, questionRepository.count());
+//	}
+//
+//	@Test
+//	void testJpa() {
+//		Optional<Answer> oa = this.answerRepository.findById(1);
+//		assertTrue(oa.isPresent());
+//		Answer a = oa.get();
+//		System.out.println("a.getContent() = " + a.getContent());
+//		assertEquals(1, a.getQuestion().getId());
+//	}
+//
+//	@Transactional
+//	@Test
+//	@Rollback(value = false)
+//	void testJpa2() {
+////		questionRepository
+//		Optional<Question> oq = this.questionRepository.findById(1);
+//		assertTrue(oq.isPresent());
+//		Question q = oq.get();
+//		System.out.println("q.getContent() = " + q.getContent());
+//		List<Answer> answerList = q.getAnswerList();
+//		for (Answer answer : answerList) {
+//			System.out.println("answer.getContent() = " + answer.getContent());
+//		}
+//		System.out.println("test");
+////		assertEquals(1, answerList.size());
+////		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+//	}
+//
+//	@Test
+//	public void delete_truncate(){
+//		questionRepository.truncateQuestion();
+//		List<Question> all = questionRepository.findAll();
+//		System.out.println("all.size() = " + all.size());
+//	}
+//	@Test
+//	public void delete_truncate2(){
+//		questionRepository.disableForeignKeyCHECKS();
+//		questionRepository.truncateQuestion();
+//		questionRepository.ableForeignKeyCHECKS();
+//		List<Question> all = questionRepository.findAll();
+//		System.out.println("all.size() = " + all.size());
+//	}
 
 }

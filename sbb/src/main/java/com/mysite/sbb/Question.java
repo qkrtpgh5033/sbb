@@ -1,19 +1,23 @@
 package com.mysite.sbb;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 public class Question {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,8 +28,8 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private LocalDateTime localDateTime;
-    public void test(){}
+    private LocalDateTime createDate;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
-    private List<Answer> answerList = new ArrayList<>(); // 클래스에만 존재 ( DB 컬럼에는 정보를 1개만 넣을 수 있다. )
+    private List<Answer> answerList = new ArrayList<>();
 }

@@ -2,6 +2,7 @@ package com.mysite.sbb;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,10 +19,9 @@ public class Answer {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @CreatedDate
     private LocalDateTime createDate;
 
-    @ManyToOne//  질문 엔티티와 연결된 속성이라는 것을 명시적으로 표시해야 한다.
-    @JoinColumn(foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne
     private Question question;
-
 }

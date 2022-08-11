@@ -11,12 +11,25 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
      List<Question> findBySubject(String subject);
+
      Optional<Question> findBySubjectAndContent(String subject, String content);
 
      List<Question> findBySubjectLike(String subject);
+
 
      @Transactional
      @Modifying
      @Query(value = "truncate question", nativeQuery = true)
      void truncateQuestion();
+
+     @Transactional
+     @Modifying
+     @Query(value = "set foreign_key_checks = 0", nativeQuery = true)
+     void disableForeignKeyCHECKS();
+
+     @Transactional
+     @Modifying
+     @Query(value = "set foreign_key_checks = 1", nativeQuery = true)
+     void ableForeignKeyCHECKS();
+
 }
