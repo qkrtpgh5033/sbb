@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,9 @@ class SbbApplicationTests {
 		a2.setQuestion(q);  // 어떤 질문의 답변인지 알기위해서 Question 객체가 필요하다.
 		a2.setCreateDate(LocalDateTime.now());
 		this.answerRepository.save(a2);
+
+//		answerRepository.flush();
+//		questionRepository.flush();
 
 
 	}
@@ -121,7 +125,9 @@ class SbbApplicationTests {
 
 	@Transactional
 	@Test
+	@Rollback(value = false)
 	void testJpa2() {
+//		questionRepository
 		Optional<Question> oq = this.questionRepository.findById(1);
 		assertTrue(oq.isPresent());
 		Question q = oq.get();
@@ -133,6 +139,13 @@ class SbbApplicationTests {
 		System.out.println("test");
 //		assertEquals(1, answerList.size());
 //		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+	}
+
+	@Test
+	public void delete_truncate(){
+		questionRepository.truncateQuestion();
+		List<Question> all = questionRepository.findAll();
+		System.out.println("all.size() = " + all.size());
 	}
 
 }
