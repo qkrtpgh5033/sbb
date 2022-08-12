@@ -1,13 +1,12 @@
-package com.mysite.sbb;
+package com.mysite.sbb.answer;
 
-import lombok.EqualsAndHashCode;
+import com.mysite.sbb.question.Question;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 
 @Getter
