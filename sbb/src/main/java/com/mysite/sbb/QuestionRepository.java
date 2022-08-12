@@ -1,5 +1,6 @@
 package com.mysite.sbb;
 
+import com.mysite.sbb.base.RepositoryUtil;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface QuestionRepository extends JpaRepository<Question, Integer> {
+public interface QuestionRepository extends JpaRepository<Question, Integer>, RepositoryUtil {
 
      List<Question> findBySubject(String subject);
 
@@ -19,17 +20,8 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
      @Transactional
      @Modifying
-     @Query(value = "truncate question", nativeQuery = true)
-     void truncateQuestion();
+     @Query(value = "ALTER TABLE question AUTO_INCREMENT = 1", nativeQuery = true)
+     void truncate(); // 이거 지우면 안됨, truncateTable 하면 자동으로 이게 실행됨
 
-     @Transactional
-     @Modifying
-     @Query(value = "set foreign_key_checks = 0", nativeQuery = true)
-     void disableForeignKeyCHECKS();
-
-     @Transactional
-     @Modifying
-     @Query(value = "set foreign_key_checks = 1", nativeQuery = true)
-     void ableForeignKeyCHECKS();
 
 }

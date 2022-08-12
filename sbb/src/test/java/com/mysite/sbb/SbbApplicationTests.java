@@ -36,13 +36,8 @@ class SbbApplicationTests {
 	}
 
 	public void clearData(){
-		questionRepository.disableForeignKeyCHECKS();
-		questionRepository.truncateQuestion();
-		questionRepository.ableForeignKeyCHECKS();
-
-		answerRepository.disableForeignKeyCHECKS();
-		answerRepository.truncateAnswer();
-		answerRepository.ableForeignKeyCHECKS();
+		questionRepository.deleteAll(); // DELETE FROM question;
+		questionRepository.truncateTable();
 
 	}
 
