@@ -242,15 +242,19 @@ public class MainController {
 
     @GetMapping("/addPerson")
     @ResponseBody
-    public Person addPerson(Person person){
+    public Person addPerson(Person person) {
         return person;
     }
 
     @GetMapping("/addPerson/{id}")
     @ResponseBody
-    public Person addPerson2(@PathVariable("id") int id, Person person){
+    public Person addPerson2(@PathVariable("id") int id, Person person) {
         person.setId(id);
         return person;
     }
 
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/question/list";
+    }
 }

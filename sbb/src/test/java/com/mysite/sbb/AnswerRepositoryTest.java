@@ -29,6 +29,11 @@ public class AnswerRepositoryTest {
         clearData();
         createSampleData();
     }
+    @Test
+    void create() {
+        clearData();
+        createSampleData();
+    }
 
     private void clearData() {
         QuestionRepositoryTest.clearData(questionRepository);
