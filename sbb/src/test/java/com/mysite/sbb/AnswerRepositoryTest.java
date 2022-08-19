@@ -22,45 +22,40 @@ public class AnswerRepositoryTest {
     private QuestionRepository questionRepository;
     @Autowired
     private AnswerRepository answerRepository;
-    private int lastSampleDataId;
 
     @BeforeEach
     void beforeEach() {
         clearData();
         createSampleData();
     }
-    @Test
-    void create() {
-        clearData();
-        createSampleData();
-    }
 
-    private void clearData() {
+    public static void clearData(AnswerRepository answerRepository, QuestionRepository questionRepository) {
         QuestionRepositoryTest.clearData(questionRepository);
 
         answerRepository.deleteAll(); // DELETE FROM question;
         answerRepository.truncateTable();
     }
 
+    private void clearData() {
+        clearData(answerRepository, questionRepository);
+    }
+
     private void createSampleData() {
         QuestionRepositoryTest.createSampleData(questionRepository);
 
+        // 관련 답변이 하나없는 상태에서 쿼리 발생
         Question q = questionRepository.findById(1).get();
 
         Answer a1 = new Answer();
         a1.setContent("sbb는 질문답변 게시판 입니다.");
-        a1.setQuestion(q);
         a1.setCreateDate(LocalDateTime.now());
-        answerRepository.save(a1);
-        q.getAnswerList().add(a1);
-        questionRepository.save(q);
+        q.addAnswer(a1);
 
         Answer a2 = new Answer();
         a2.setContent("sbb에서는 주로 스프링부트관련 내용을 다룹니다.");
-        a2.setQuestion(q);
         a2.setCreateDate(LocalDateTime.now());
-        answerRepository.save(a2);
-        q.getAnswerList().add(a2);
+        q.addAnswer(a2);
+
         questionRepository.save(q);
     }
 
