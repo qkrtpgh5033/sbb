@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QuestionRepositoryTest {
     @Autowired
     private QuestionRepository questionRepository;
-    private static long lastSampleDataId;
+    private static int lastSampleDataId;
 
     @BeforeEach
     void beforeEach() {
@@ -24,7 +24,7 @@ public class QuestionRepositoryTest {
         createSampleData();
     }
 
-    public static long createSampleData(QuestionRepository questionRepository) {
+    public static int createSampleData(QuestionRepository questionRepository) {
         Question q1 = new Question();
         q1.setSubject("sbb가 무엇인가요?");
         q1.setContent("sbb에 대해서 알고 싶습니다.");
