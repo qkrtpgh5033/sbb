@@ -4,6 +4,28 @@
         layout:decorate="~{layout}">
 
 <div layout:fragment="content" class="container my-3">
+    <div class="row my-3">
+        <div class="col-6">
+            <a th:href="@{/question/create}" class="btn btn-primary">질문 등록하기</a>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+
+
+                <form class="input-group">
+                    <input type="text" id="search_kw" class="form-control" name="kw" placeholder="검색어를 입력해주세요.">
+                    <select class="form-select" name="sortCode" th:value="${param.sortCode}">
+                        <option value="NEW">최신순</option>
+                        <option value="OLD">오래된순</option>
+                    </select>
+                    <button class="btn btn-outline-secondary" type="susbmit" id="btn_search">찾기</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
     <table class="table">
         <thead class="table-dark">
         <tr class="text-center">
@@ -15,7 +37,7 @@
         </thead>
         <tbody>
         <tr class="text-center" th:each="question, loop : ${paging}">
-            <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+            <td th:text="${question.id}"></td>
             <td class="text-start">
                 <a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}"></a>
                 <span class="text-danger small ms-2" th:if="${#lists.size(question.answerList) > 0}"
@@ -40,7 +62,7 @@
                 th:if="${page >= paging.number-5 and page <= paging.number+5}"
                 th:classappend="${page == paging.number} ? 'active'"
                 class="page-item">
-                <a th:text="${page}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                <a th:text="${page}" class="page-link" th:href="@{|?page=${page}&kw=${kw}|}"></a>
             </li>
             <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
                 <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
@@ -51,7 +73,10 @@
     </div>
     <!-- 페이징처리 끝 -->
 
-    <a th:href="@{/question/create}" class="btn btn-primary">질문 등록하기</a>
+    <form th:action="@{/question/list}" method="get" id="searchForm">
+        <input type="hidden" id="kw" name="kw" th:value="${kw}">
+        <input type="hidden" id="page" name="page" th:value="${paging.number}">
+    </form>
 
 </div>
 

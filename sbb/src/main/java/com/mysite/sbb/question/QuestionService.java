@@ -67,7 +67,8 @@ public class QuestionService {
         sorts.add(Sort.Order.desc("createDate"));
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return this.questionRepository.findBySubjectContainsOrContentContainsOrAuthor_usernameContains(pageable, kw, kw, kw);
+
+        return this.questionRepository.findDistinctBySubjectContainsOrContentContainsOrAuthor_usernameContainsOrAnswerListContentContainsOrAnswerList_author_username(pageable, kw, kw, kw, kw, kw);
     }
 
     public void delete(Question question) {
